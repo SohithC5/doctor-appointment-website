@@ -5,7 +5,7 @@ import { AppContext } from '../../context/AppContext'
 
 const Dashboard = () => {
 
-  const { aToken, cancelAppoitment, dashData, getDashData } = useContext(AdminContext)
+  const { aToken, cancelAppointment, dashData, getDashData } = useContext(AdminContext)
   const { slotDateFormat } = useContext(AppContext)
 
   useEffect(() => {
@@ -70,7 +70,7 @@ const Dashboard = () => {
                 {
                   item.cancelled
                     ? <p className='text-red-400 text-xs font-medium'>Cancelled</p>
-                    : <img onClick={() => cancelAppoitment(item._id)} className='w-10 cursor-pointer' src={assets.cancel_icon} alt="" />
+                    : <img onClick={() => cancelAppointment(item._id)} className='w-10 cursor-pointer' src={assets.cancel_icon} alt="" />
                 }
 
               </div>
