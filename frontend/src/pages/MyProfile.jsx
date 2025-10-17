@@ -9,7 +9,6 @@ const MyProfile = () => {
   const { userData, setUserData, token, backendUrl, loadUserProfileData } = useContext(AppContext)
 
   const [isEdit, setIsEdit] = useState(false)
-  const [image, setImage] = useState(false)
 
   const updateUserProfileData = async () => {
 
@@ -22,8 +21,6 @@ const MyProfile = () => {
       formData.append('address', JSON.stringify(userData.address))
       formData.append('gender', userData.gender)
       formData.append('dob', userData.dob)
-
-      image && formData.append('image', image)
 
       const { data } = await axios.post(backendUrl + '/api/user/update-profile', formData, { headers: { token } })
 
@@ -46,17 +43,9 @@ const MyProfile = () => {
   return userData && (
     <div className='max-w-lg flex flex-col gap-2 text-sm'>
 
-      {
-        isEdit
-          ? <label htmlFor="image">
-            <div className='inline-block relative cursor-pointer'>
-              <img className='w-36 rounded opacity-75' src={image ? URL.createObjectURL(image) : userData.image} alt="" />
-              <img className='w-10 absolute bottom-12 right-12' src={image ? '' : assets.upload_icon} alt="" />
-            </div>
-            <input onChange={(e) => setImage(e.target.files[0])} type="file" id='image' hidden />
-          </label>
-          : <img className='w-36 rounded' src={userData.image} alt="" />
-      }
+      <div className='w-36 h-36 rounded bg-primary text-white flex items-center justify-center text-4xl font-semibold'>
+        {userData.name ? userData.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : 'U'}
+      </div>
 
       {
         isEdit

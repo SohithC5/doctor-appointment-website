@@ -19,44 +19,67 @@ const AllAppointments = () => {
       <p className='mb-3 text-lg font-medium'>All Appointments</p>
 
       <div className='bg-white border rounded text-sm max-h-[80vh] min-h-[60vh] overflow-y-scroll'>
-        <div className='hidden sm:grid grid-cols-[0.5fr_3fr_1fr_3fr_3fr_1fr_1fr] grid-flow-col py-3 px-6 border-b'>
-          <p>#</p>
-          <p>Patient</p>
-          <p>Age</p>
-          <p>Date & Time</p>
-          <p>Doctor</p>
-          <p>Fees</p>
-          <p>Actions</p>
+        <div className='hidden sm:grid grid-cols-[0.5fr_2fr_1fr_2fr_2fr_1fr_1fr] py-3 px-6 border-b font-medium'>
+          <p className="text-left text-gray-600">#</p>
+          <p className="text-left text-gray-600">Patient</p>
+          <p className="text-left text-gray-600">Age</p>
+          <p className="text-left text-gray-600">Date & Time</p>
+          <p className="text-left text-gray-600">Doctor</p>
+          <p className="text-left text-gray-600">Fees</p>
+          <p className="text-left text-gray-600">Actions</p>
         </div>
 
         {appointments.map((item, index) => (
-          <div className='flex flex-wrap justify-between max-sm:grid sm:grid-cols-[0.5fr_3fr_1fr_3fr_3fr_1fr_1fr] items-center text-gray-500 py-3 px-3 border-b hover:bg-gray-50' key={index}>
-            <p className='max-sm:hidden'>{index + 1}</p>
+          <div className='grid grid-cols-[0.5fr_2fr_0.7fr_1.5fr_1.8fr_0.8fr_1fr] gap-4 items-center text-gray-600 py-3 px-6 border-b hover:bg-gray-50' key={index}>
+            <span className='max-sm:hidden text-sm'>{index + 1}</span>
 
-            <div className='flex items-center gap-2'>
-              <div className='w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-semibold'>
-                {item.userData?.name ? item.userData.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : 'U'}
+            <div className='grid grid-cols-[auto_1fr] gap-2 items-center min-w-0'>
+              <div className='w-9 h-9 rounded-full bg-[#6C5FFC] bg-opacity-10 text-[#6C5FFC] grid place-items-center text-sm font-medium'>
+                {item.userData?.name?.charAt(0)?.toUpperCase() || 'U'}
               </div>
-              <p>{item.userData?.name || 'Unknown User'}</p>
+              <div className="min-w-0">
+                <p className="truncate text-sm" title={item.userData?.name || 'Unknown User'}>
+                  {item.userData?.name || 'Unknown User'}
+                </p>
+                {item.userData?.email && (
+                  <p className="text-gray-400 text-xs truncate" title={item.userData.email}>
+                    {item.userData.email}
+                  </p>
+                )}
+              </div>
             </div>
 
-            <p className='max-sm:hidden'>{item.userData?.dob ? calculateAge(item.userData.dob) : 'N/A'}</p>
-            <p>{slotDateFormat(item.slotDate)}, {item.slotTime}</p>
+            <span className='max-sm:hidden text-sm'>
+              {item.userData?.dob ? 
+                (!isNaN(calculateAge(item.userData.dob)) ? calculateAge(item.userData.dob) : '-') 
+                : '-'}
+            </span>
 
-            <div className='flex items-center gap-2'>
-              <div className='w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-semibold'>
-                {item.docData?.name ? item.docData.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : 'DR'}
+            <span className="text-sm whitespace-nowrap">{slotDateFormat(item.slotDate)}, {item.slotTime}</span>
+
+            <div className='grid grid-cols-[auto_1fr] gap-2 items-center min-w-0'>
+              <div className='w-9 h-9 rounded-full bg-[#6C5FFC] bg-opacity-10 text-[#6C5FFC] grid place-items-center text-sm font-medium'>
+                {item.docData?.name?.split(' ').map(n => n[0]).slice(0, 2).join('') || 'DR'}
               </div>
-              <p>{item.docData?.name || 'Unknown Doctor'}</p>
+              <p className="truncate text-sm" title={item.docData?.name || 'Unknown Doctor'}>
+                {item.docData?.name || 'Unknown Doctor'}
+              </p>
             </div>
 
-            <p>{currency}{item.amount}</p>
+            <span className="text-sm font-medium">${item.amount || '-'}</span>
 
-            {
-              item.cancelled
-                ? <p className='text-red-400 text-xs font-medium'>Cancelled</p>
-                : <img onClick={() => cancelAppointment(item._id)} className='w-10 cursor-pointer' src={assets.cancel_icon} alt="" />
-            }
+            <div>
+              {item.cancelled ? (
+                <p className='text-[#FF4747] text-sm font-medium'>Cancelled</p>
+              ) : (
+                <button 
+                  onClick={() => cancelAppointment(item._id)}
+                  className='text-[#FF4747] hover:text-red-700 font-medium text-sm'
+                >
+                  Cancel
+                </button>
+              )}
+            </div>
 
           </div>
         ))}

@@ -58,7 +58,9 @@ const Dashboard = () => {
           {
             dashData.lastestAppointments.map((item, index) => (
               <div className='flex items-center px-6 py-3 gap-3 hover:bg-gray-100' key={index}>
-                <img className='rounded-full w-10' src={item.docData.image} alt="" />
+                <div className='w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center text-sm font-semibold'>
+                  {item.docData?.name ? item.docData.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : 'DR'}
+                </div>
 
                 <div className='flex-1 text-sm'>
                   <p className='text-gray-800 font-medium'>{item.docData.name}</p>
