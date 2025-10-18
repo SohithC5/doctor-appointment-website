@@ -1,64 +1,118 @@
-import React, { useContext, useState } from 'react'
-import { assets } from '../assets/assets_admin/assets'
-import { AdminContext } from '../context/AdminContext'
-import { toast } from 'react-toastify'
-import axios from 'axios'
+import React, { useContext, useState, useEffect } from "react";
+import { assets } from "../assets/assets_admin/assets";
+import { AdminContext } from "../context/AdminContext";
+import { DoctorContext } from "../context/DoctorContext";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-
-  const [state, setState] = useState('Admin')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const { setAToken, backendUrl } = useContext(AdminContext)
+  const [state, setState] = useState("Admin");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const { setAToken, backendUrl } = useContext(AdminContext);
+  const { setDToken, dToken } = useContext(DoctorContext);
+  const navigate = useNavigate();
 
   const onSubmitHandler = async (event) => {
-    event.preventDefault()
+    event.preventDefault();
 
     try {
-
-      if (state === 'Admin') {
-        const { data } = await axios.post(backendUrl + '/api/admin/login', { email, password })
+      if (state === "Admin") {
+        const { data } = await axios.post(backendUrl + "/api/admin/login", {
+          email,
+          password,
+        });
         if (data.success) {
-          localStorage.setItem('aToken', data.token)
-          setAToken(data.token)
+          localStorage.setItem("aToken", data.token);
+          setAToken(data.token);
         } else {
-          toast.error(data.message)
+          toast.error(data.message);
         }
       } else {
-
+        // Doctor Login
+        const { data } = await axios.post(backendUrl + "/api/doctor/login", {
+          email,
+          password,
+        });
+        if (data.success) {
+          localStorage.setItem("dToken", data.token);
+          setDToken(data.token);
+          toast.success("Doctor logged in successfully");
+        } else {
+          toast.error(data.message);
+        }
       }
-
     } catch (error) {
-
+      console.log(error);
+      toast.error(error.response?.data?.message || "Login failed");
     }
-  }
+  };
+
+  // Navigation effect after successful login
+  useEffect(() => {
+    if (dToken) {
+      navigate("/doctor-dashboard");
+    }
+  }, [dToken, navigate]);
 
   return (
-    <form onSubmit={onSubmitHandler} className='min-h-[80vh] flex items-center'>
-      <div className='flex flex-col gap-3 m-auto items-start p-8 min-w-[340px] sm:min-w-96 border rounded-xl text-[#5e5e5e] text-sm shadow-lg'>
-        <p className='text-2xl font-semibold m-auto'><span className='text-primary'> {state}</span> Login</p>
+    <form onSubmit={onSubmitHandler} className="min-h-[80vh] flex items-center">
+      <div className="flex flex-col gap-3 m-auto items-start p-8 min-w-[340px] sm:min-w-96 border rounded-xl text-[#5e5e5e] text-sm shadow-lg">
+        <p className="text-2xl font-semibold m-auto">
+          <span className="text-primary"> {state}</span> Login
+        </p>
 
-        <div className='w-full'>
+        <div className="w-full">
           <p>Email</p>
-          <input onChange={(e) => setEmail(e.target.value)} value={email} className='border border-[#dadada] rounded w-full p-2 mt-1' type="email" required />
+          <input
+            onChange={(e) => setEmail(e.target.value)}
+            value={email}
+            className="border border-[#dadada] rounded w-full p-2 mt-1"
+            type="email"
+            required
+          />
         </div>
 
-        <div className='w-full'>
+        <div className="w-full">
           <p>Password</p>
-          <input onChange={(e) => setPassword(e.target.value)} value={password} className='border border-[#dadada] rounded w-full p-2 mt-1' type="password" required />
+          <input
+            onChange={(e) => setPassword(e.target.value)}
+            value={password}
+            className="border border-[#dadada] rounded w-full p-2 mt-1"
+            type="password"
+            required
+          />
         </div>
 
-        <button className='bg-primary text-white w-full py-2 rounded-md text-base'>Login</button>
+        <button className="bg-primary text-white w-full py-2 rounded-md text-base">
+          Login
+        </button>
 
-        {
-          state === 'Admin'
-            ? <p>Doctor Login? <span className='text-primary underline cursor-pointer text-xs' onClick={() => setState('Doctor')}>Click Here</span></p>
-            : <p>Admin Login? <span className='text-primary underline cursor-pointer text-xs' onClick={() => setState('Admin')}>Click Here</span></p>
-        }
-
+        {state === "Admin" ? (
+          <p>
+            Doctor Login?{" "}
+            <span
+              className="text-primary underline cursor-pointer text-xs"
+              onClick={() => setState("Doctor")}
+            >
+              Click Here
+            </span>
+          </p>
+        ) : (
+          <p>
+            Admin Login?{" "}
+            <span
+              className="text-primary underline cursor-pointer text-xs"
+              onClick={() => setState("Admin")}
+            >
+              Click Here
+            </span>
+          </p>
+        )}
       </div>
     </form>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;

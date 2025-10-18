@@ -1,18 +1,18 @@
 import jwt from "jsonwebtoken";
 
-// user authentication middleware
-const authUser = async (req, res, next) => {
+// doctor authentication middleware
+const authDoctor = async (req, res, next) => {
   try {
-    const { token } = req.headers;
-    if (!token) {
+    const { dtoken } = req.headers;
+    if (!dtoken) {
       return res.json({
         success: false,
         message: "Not Authorized Login Again",
       });
     }
 
-    const token_decode = jwt.verify(token, process.env.JWT_SECRET);
-    req.body.userId = token_decode.id;
+    const token_decode = jwt.verify(dtoken, process.env.JWT_SECRET);
+    req.body.docId = token_decode.id;
 
     next();
   } catch (error) {
@@ -22,20 +22,20 @@ const authUser = async (req, res, next) => {
     if (error.name === "JsonWebTokenError") {
       return res.json({
         success: false,
-        message: "Invalid token. Please login again.",
+        message: "Invalid doctor token. Please login again.",
       });
     } else if (error.name === "TokenExpiredError") {
       return res.json({
         success: false,
-        message: "Token expired. Please login again.",
+        message: "Doctor token expired. Please login again.",
       });
     }
 
     res.json({
       success: false,
-      message: "Authentication failed. Please login again.",
+      message: "Doctor authentication failed. Please login again.",
     });
   }
 };
 
-export default authUser;
+export default authDoctor;
